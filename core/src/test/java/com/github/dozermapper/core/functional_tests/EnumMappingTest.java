@@ -30,6 +30,10 @@ import com.github.dozermapper.core.vo.enumtest.MyBeanPrimeShort;
 import com.github.dozermapper.core.vo.enumtest.MyBeanPrimeString;
 import com.github.dozermapper.core.vo.enumtest.SrcType;
 import com.github.dozermapper.core.vo.enumtest.SrcTypeWithOverride;
+import com.github.dozermapper.core.vo.enumtest.constructor.ChildBean;
+import com.github.dozermapper.core.vo.enumtest.constructor.ChildEnum;
+import com.github.dozermapper.core.vo.enumtest.constructor.ParentBeanWithChildBean;
+import com.github.dozermapper.core.vo.enumtest.constructor.ParentBeanWithChildEnum;
 
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.BeforeClass;
@@ -90,6 +94,23 @@ public class EnumMappingTest extends AbstractFunctionalTest {
         enumMappingOverriedEnumToBasedEnum = DozerBeanMapperBuilder.create()
                 .withMappingFiles("mappings/enumMappingOverriedEnumToBasedEnum.xml")
                 .build();
+    }
+
+    @Test
+    public void canConstructorEnumMapsToBean() {
+        final ChildBean childBean = mapper.map(ChildEnum.FOO, ChildBean.class);
+
+        assertEquals(ChildEnum.FOO.getAttribute(), childBean.getAttribute());
+    }
+
+    @Test
+    public void canChildConstructorEnumInParentBeanMapsToChildBeanInParentBean() {
+        final ParentBeanWithChildEnum parentBeanWithChildEnum = newInstance(ParentBeanWithChildEnum.class);
+        parentBeanWithChildEnum.setChildEnum(ChildEnum.FOO);
+
+        final ParentBeanWithChildBean parentBeanWithChildBean = mapper.map(parentBeanWithChildEnum, ParentBeanWithChildBean.class);
+
+        assertEquals(parentBeanWithChildEnum.getChildEnum().getAttribute(), parentBeanWithChildBean.getChildBean().getAttribute());
     }
 
     @Test
